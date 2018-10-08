@@ -10,6 +10,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    var currentRingtone: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -21,12 +23,14 @@ class MainActivity : AppCompatActivity() {
         QRingtone(this)
                 .setFragmentManager(supportFragmentManager)
                 .setTitle("Ringtone Picker")
-                .setIsPlayAble(true)
+                .isPlayable(true)
                 .setNegativeButton("Cancel")
                 .setPositiveButton("Ok")
+                .setCurrentRingtone(currentRingtone)
                 .setRingtoneListener(object : QRingtoneListener {
                     override fun onItemRingtoneSelected(ringtone: Ringtone) {
                         Toast.makeText(this@MainActivity, ringtone.name, Toast.LENGTH_SHORT).show()
+                        currentRingtone = ringtone.uri.toString()
                     }
 
                 })

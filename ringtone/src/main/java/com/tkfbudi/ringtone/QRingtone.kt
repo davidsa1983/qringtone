@@ -1,6 +1,7 @@
 package com.tkfbudi.ringtone
 
 import android.content.Context
+import android.net.Uri
 import android.support.v4.app.FragmentManager
 
 /**
@@ -14,8 +15,8 @@ class QRingtone(internal val context: Context) {
     internal var positiveButton: String = context.getString(R.string.qringtone_ok)
     internal var negativeButton: String = context.getString(R.string.qringtone_cancel)
     internal var title: String = context.getString(R.string.qringtone_title)
-    internal var isPlayAble: Boolean = true
-    internal var setCurrentRingtone: String? = null
+    internal var playable: Boolean = true
+    internal var currentRingtone: String? = null
     internal var qRingtoneListener: QRingtoneListener? = null
 
     fun setFragmentManager(fragmentManager: FragmentManager): QRingtone {
@@ -53,8 +54,8 @@ class QRingtone(internal val context: Context) {
         return this
     }
 
-    fun setIsPlayAble(isPlayAble: Boolean): QRingtone {
-        this.isPlayAble = isPlayAble
+    fun isPlayable(isPlayAble: Boolean): QRingtone {
+        this.playable = isPlayAble
         return this
     }
 
@@ -63,16 +64,27 @@ class QRingtone(internal val context: Context) {
         return this
     }
 
+    fun setCurrentRingtone(currentRingtone :String?): QRingtone {
+        this.currentRingtone = currentRingtone
+        return this
+    }
+
+    fun setCurrentRingtone(currentRingtone: Uri): QRingtone {
+        this.currentRingtone = currentRingtone.toString()
+        return this
+    }
+
     fun show() {
         if (!this::fragmentManager.isInitialized) {
             throw IllegalArgumentException("Support fragment manager can't null")
         }
 
-//        if(!this::qRingtoneListener.isInitialized){
-//            throw IllegalArgumentException("Need implement QRingtone Listener")
-//        }
-
-        QRingtoneDialog.instance(fragmentManager, title, positiveButton, negativeButton, qRingtoneListener)
+        QRingtoneDialog.instance(fragmentManager,
+                title,
+                positiveButton,
+                negativeButton,
+                currentRingtone,
+                qRingtoneListener)
     }
 
 }
