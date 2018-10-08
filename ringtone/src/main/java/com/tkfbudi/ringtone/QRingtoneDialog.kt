@@ -1,5 +1,6 @@
 package com.tkfbudi.ringtone
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentManager
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.qringtone_dialog.*
+import java.lang.ref.WeakReference
 
 /**
  * Created on : 22/09/18
@@ -54,7 +56,7 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adapter = RingtoneAdapter(ringtones, this)
-        loader = RingtoneLoader(context, this)
+        loader = RingtoneLoader(WeakReference<Context>(context), this)
         player = RingtoneMediaPlayer(context!!)
     }
 
@@ -101,7 +103,7 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
         this.ringtones.addAll(ringtones)
         adapter.notifyDataSetChanged()
 
-        val position = getCurrentRingtonePosition(ringtones);
+        val position = getCurrentRingtonePosition(ringtones)
         adapter.setLastPosition(position)
         rvRingtone.scrollToPosition(position)
     }
@@ -114,17 +116,13 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
     }
 
     private fun getCurrentRingtonePosition(ringtones: List<Ringtone>): Int {
-        val currentRingtone = arguments?.get(ARG_CURRENT_RINGTONE)
+        val currentRingtone = arguments?.get(ARG_CURRENT_RINGTONE) ?: return -1
 
-        if(currentRingtone == null) return -1
-
-        var i = 0
-        for (ringtone in ringtones) {
+        for ((i, ringtone) in ringtones.withIndex()) {
             if (currentRingtone == ringtone.uri.toString()) {
                 this.ringtone = ringtone
                 return i
             }
-            i++
         }
         return -1
     }
