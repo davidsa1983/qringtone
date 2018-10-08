@@ -62,6 +62,7 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val myView = inflater.inflate(R.layout.qringtone_dialog, container, false)
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.qringtone_style)
         dialog.setTitle(arguments?.getString(ARG_TITLE))
         listener = arguments?.getSerializable(ARG_QRINGTONE_LISTENER) as QRingtoneListener?
         return myView
