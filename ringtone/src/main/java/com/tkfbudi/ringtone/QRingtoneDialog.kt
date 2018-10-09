@@ -1,5 +1,6 @@
 package com.tkfbudi.ringtone
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentManager
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.qringtone_dialog.*
+import java.lang.ref.WeakReference
 
 /**
  * Created on : 22/09/18
@@ -27,7 +29,6 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
         const val ARG_TITLE: String = "qringtone_title"
         const val ARG_POSITIVE_BUTTON = "qringtone_positive_button"
         const val ARG_NEGATIVE_BUTTON = "qringtone_negative_button"
-        const val ARG_QRINGTONE_LISTENER = "qringtone_listener"
         const val ARG_CURRENT_RINGTONE = "qringtone_current"
 
         fun instance(fragmentManager: FragmentManager,
@@ -42,11 +43,11 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
             bundle.putString(ARG_POSITIVE_BUTTON, positiveButton)
             bundle.putString(ARG_NEGATIVE_BUTTON, negativeButton)
             bundle.putString(ARG_CURRENT_RINGTONE, currentRingtone)
-            bundle.putSerializable(ARG_QRINGTONE_LISTENER, qRingtoneListener)
 
             val dialog = QRingtoneDialog()
             dialog.retainInstance = true
             dialog.arguments = bundle
+            dialog.setListener(qRingtoneListener)
             dialog.show(fragmentManager, QRingtoneDialog::class.simpleName)
         }
     }
@@ -54,14 +55,14 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         adapter = RingtoneAdapter(ringtones, this)
-        loader = RingtoneLoader(context, this)
+        loader = RingtoneLoader(WeakReference<Context>(context), this)
         player = RingtoneMediaPlayer(context!!)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val myView = inflater.inflate(R.layout.qringtone_dialog, container, false)
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.qringtone_style)
         dialog.setTitle(arguments?.getString(ARG_TITLE))
-        listener = arguments?.getSerializable(ARG_QRINGTONE_LISTENER) as QRingtoneListener?
         return myView
     }
 
@@ -72,6 +73,10 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
         loader.execute()
         btnCancel.setOnClickListener { dismiss() }
         btnSelect.setOnClickListener { itemSelected() }
+    }
+
+    fun setListener(listener: QRingtoneListener?) {
+        this.listener = listener
     }
 
     private fun initView() {
@@ -101,7 +106,7 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
         this.ringtones.addAll(ringtones)
         adapter.notifyDataSetChanged()
 
-        val position = getCurrentRingtonePosition(ringtones);
+        val position = getCurrentRingtonePosition(ringtones)
         adapter.setLastPosition(position)
         rvRingtone.scrollToPosition(position)
     }
@@ -114,17 +119,13 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
     }
 
     private fun getCurrentRingtonePosition(ringtones: List<Ringtone>): Int {
-        val currentRingtone = arguments?.get(ARG_CURRENT_RINGTONE)
+        val currentRingtone = arguments?.get(ARG_CURRENT_RINGTONE) ?: return -1
 
-        if(currentRingtone == null) return -1
-
-        var i = 0
-        for (ringtone in ringtones) {
+        for ((i, ringtone) in ringtones.withIndex()) {
             if (currentRingtone == ringtone.uri.toString()) {
                 this.ringtone = ringtone
                 return i
             }
-            i++
         }
         return -1
     }
