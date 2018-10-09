@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
 import com.tkfbudi.ringtone.RingtoneAdapter.RingtoneViewHolder
 import kotlinx.android.synthetic.main.item_ringtone.view.*
 
@@ -15,7 +14,7 @@ import kotlinx.android.synthetic.main.item_ringtone.view.*
  */
 class RingtoneAdapter(var ringtones: MutableList<Ringtone>, val listener: RingtoneClickedListener): RecyclerView.Adapter<RingtoneViewHolder>() {
 
-    var lastSelected: Int = 0
+    var lastSelected: Int = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RingtoneViewHolder {
         var view = LayoutInflater.from(parent.context).inflate(R.layout.item_ringtone, parent, false)
@@ -24,6 +23,10 @@ class RingtoneAdapter(var ringtones: MutableList<Ringtone>, val listener: Ringto
 
     override fun getItemCount(): Int {
         return ringtones.size
+    }
+
+    fun setLastPosition(position: Int) {
+        lastSelected = position
     }
 
     override fun onBindViewHolder(holder: RingtoneViewHolder, position: Int) {

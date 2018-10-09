@@ -28,17 +28,20 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
         const val ARG_POSITIVE_BUTTON = "qringtone_positive_button"
         const val ARG_NEGATIVE_BUTTON = "qringtone_negative_button"
         const val ARG_QRINGTONE_LISTENER = "qringtone_listener"
+        const val ARG_CURRENT_RINGTONE = "qringtone_current"
 
         fun instance(fragmentManager: FragmentManager,
                      title: String,
                      positiveButton: String,
                      negativeButton: String,
+                     currentRingtone: String?,
                      qRingtoneListener: QRingtoneListener?) {
 
             val bundle = Bundle()
             bundle.putString(ARG_TITLE, title)
             bundle.putString(ARG_POSITIVE_BUTTON, positiveButton)
             bundle.putString(ARG_NEGATIVE_BUTTON, negativeButton)
+            bundle.putString(ARG_CURRENT_RINGTONE, currentRingtone)
             bundle.putSerializable(ARG_QRINGTONE_LISTENER, qRingtoneListener)
 
             val dialog = QRingtoneDialog()
@@ -97,12 +100,33 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
 
         this.ringtones.addAll(ringtones)
         adapter.notifyDataSetChanged()
+
+        val position = getCurrentRingtonePosition(ringtones);
+        adapter.setLastPosition(position)
+        rvRingtone.scrollToPosition(position)
     }
 
     private fun itemSelected() {
         if (this::ringtone.isInitialized) {
             listener?.onItemRingtoneSelected(ringtone)
         }
+        dismiss()
+    }
+
+    private fun getCurrentRingtonePosition(ringtones: List<Ringtone>): Int {
+        val currentRingtone = arguments?.get(ARG_CURRENT_RINGTONE)
+
+        if(currentRingtone == null) return -1
+
+        var i = 0
+        for (ringtone in ringtones) {
+            if (currentRingtone == ringtone.uri.toString()) {
+                this.ringtone = ringtone
+                return i
+            }
+            i++
+        }
+        return -1
     }
 
     override fun onItemClicked(ringtone: Ringtone) {
