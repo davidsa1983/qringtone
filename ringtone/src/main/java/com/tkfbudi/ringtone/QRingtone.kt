@@ -69,8 +69,10 @@ class QRingtone(internal val context: Context) {
         return this
     }
 
-    fun setCurrentRingtone(currentRingtone: Uri): QRingtone {
-        this.currentRingtone = currentRingtone.toString()
+    fun setCurrentRingtone(currentRingtone: Uri?): QRingtone {
+        currentRingtone?.let {
+            this.currentRingtone = currentRingtone.toString()
+        }
         return this
     }
 
