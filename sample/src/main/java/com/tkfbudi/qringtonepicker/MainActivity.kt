@@ -20,13 +20,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showDialog() {
-        QRingtone(this)
-                .setFragmentManager(supportFragmentManager)
+        QRingtone(this, supportFragmentManager)
                 .setTitle("Ringtone Picker")
                 .isPlayable(true)
                 .setNegativeButton("Cancel")
                 .setPositiveButton("Ok")
+                //can pass uri as parameter too
                 .setCurrentRingtone(currentRingtone)
+                //default true
+                .addDefaultRingtone(false)
+                //default true
+                .addSilentRingtone(false)
                 .setRingtoneListener(object : QRingtoneListener {
                     override fun onItemRingtoneSelected(ringtone: Ringtone) {
                         Toast.makeText(this@MainActivity, ringtone.name, Toast.LENGTH_SHORT).show()
