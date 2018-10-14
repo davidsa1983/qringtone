@@ -10,19 +10,16 @@ import android.support.v4.app.FragmentManager
  * GitHub     : https://github.com/tfkbudi
  */
 
-class QRingtone(internal val context: Context) {
-    lateinit internal var fragmentManager: FragmentManager
+class QRingtone(internal val context: Context, internal val fragmentManager: FragmentManager) {
+
     internal var positiveButton: String = context.getString(R.string.qringtone_ok)
     internal var negativeButton: String = context.getString(R.string.qringtone_cancel)
     internal var title: String = context.getString(R.string.qringtone_title)
     internal var playable: Boolean = true
-    internal var currentRingtone: String? = null
+    private var currentRingtone: String? = null
     internal var qRingtoneListener: QRingtoneListener? = null
-
-    fun setFragmentManager(fragmentManager: FragmentManager): QRingtone {
-        this.fragmentManager = fragmentManager
-        return this
-    }
+    internal var defaultRingtone =  true
+    internal var silentRingtone = true
 
     fun setPositiveButton(positiveButton: String): QRingtone {
         this.positiveButton = positiveButton
@@ -76,17 +73,25 @@ class QRingtone(internal val context: Context) {
         return this
     }
 
-    fun show() {
-        if (!this::fragmentManager.isInitialized) {
-            throw IllegalArgumentException("Support fragment manager can't null")
-        }
+    fun addDefaultRingtone(defaultRingtone: Boolean): QRingtone {
+        this.defaultRingtone = defaultRingtone
+        return this
+    }
 
+    fun addSilentRingtone(silentRingtone: Boolean): QRingtone {
+        this.silentRingtone = silentRingtone
+        return this
+    }
+
+    fun show() {
         QRingtoneDialog.instance(fragmentManager,
                 title,
                 positiveButton,
                 negativeButton,
                 currentRingtone,
-                qRingtoneListener)
+                qRingtoneListener,
+                defaultRingtone,
+                silentRingtone)
     }
 
 }

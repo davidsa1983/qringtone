@@ -1,6 +1,8 @@
 package com.tkfbudi.ringtone
 
 import android.content.Context
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentManager
@@ -30,19 +32,25 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
         const val ARG_POSITIVE_BUTTON = "qringtone_positive_button"
         const val ARG_NEGATIVE_BUTTON = "qringtone_negative_button"
         const val ARG_CURRENT_RINGTONE = "qringtone_current"
+        const val ARG_DEFAULT_RINGTONE = "qringtone_default"
+        const val ARG_SILENT_RINGTONE = "qringtone_silent"
 
         fun instance(fragmentManager: FragmentManager,
                      title: String,
                      positiveButton: String,
                      negativeButton: String,
                      currentRingtone: String?,
-                     qRingtoneListener: QRingtoneListener?) {
+                     qRingtoneListener: QRingtoneListener?,
+                     defaultRingtone: Boolean,
+                     silentRingtone: Boolean) {
 
             val bundle = Bundle()
             bundle.putString(ARG_TITLE, title)
             bundle.putString(ARG_POSITIVE_BUTTON, positiveButton)
             bundle.putString(ARG_NEGATIVE_BUTTON, negativeButton)
             bundle.putString(ARG_CURRENT_RINGTONE, currentRingtone)
+            bundle.putBoolean(ARG_DEFAULT_RINGTONE, defaultRingtone)
+            bundle.putBoolean(ARG_SILENT_RINGTONE, silentRingtone)
 
             val dialog = QRingtoneDialog()
             dialog.retainInstance = true
@@ -101,7 +109,13 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
     }
 
     override fun onLoadFinish(ringtones: MutableList<Ringtone>) {
-        if (this.ringtones.size > 0) ringtones.clear()
+        arguments?.getBoolean(ARG_DEFAULT_RINGTONE)?.let {
+            if(it) this.ringtones.add(getDefaultRingtone())
+        }
+
+        arguments?.getBoolean(ARG_SILENT_RINGTONE)?.let {
+            if(it) this.ringtones.add(getSilentRingtone())
+        }
 
         this.ringtones.addAll(ringtones)
         adapter.notifyDataSetChanged()
@@ -143,6 +157,15 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
     override fun onDestroy() {
         super.onDestroy()
         player.detach()
+    }
+
+    fun getDefaultRingtone(): Ringtone {
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+        return Ringtone("Default", uri)
+    }
+
+    fun getSilentRingtone(): Ringtone {
+        return Ringtone("Silent", Uri.EMPTY)
     }
 
 
