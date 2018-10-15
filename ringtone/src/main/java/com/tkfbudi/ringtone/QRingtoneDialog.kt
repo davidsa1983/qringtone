@@ -120,7 +120,7 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
         this.ringtones.addAll(ringtones)
         adapter.notifyDataSetChanged()
 
-        val position = getCurrentRingtonePosition(ringtones)
+        val position = getCurrentRingtonePosition(this.ringtones)
         adapter.setLastPosition(position)
         rvRingtone.scrollToPosition(position)
     }
