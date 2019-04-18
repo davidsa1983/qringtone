@@ -3,6 +3,8 @@ package com.tkfbudi.ringtone
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
+import android.widget.Toast
+import java.io.IOException
 
 /**
  * Created on : 01/10/18
@@ -23,9 +25,14 @@ class RingtoneMediaPlayer(val context: Context) {
             return
         }
 
-        player.setDataSource(context, ringtone.uri)
-        player.prepare()
-        player.start()
+        try {
+            player.setDataSource(context, ringtone.uri)
+            player.prepare()
+            player.start()
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+        }
+
     }
 
     fun detach() {
