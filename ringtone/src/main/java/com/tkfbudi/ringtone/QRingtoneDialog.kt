@@ -160,7 +160,8 @@ class QRingtoneDialog : DialogFragment(), RingtoneLoader.RingtoneListener, Ringt
     }
 
     fun getDefaultRingtone(): Ringtone {
-        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+//        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         return Ringtone("Default", uri)
     }
 
